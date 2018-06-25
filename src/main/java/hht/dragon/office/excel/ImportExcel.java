@@ -95,7 +95,6 @@ public class ImportExcel {
      */
     public void importValue(InputStream input, int sheetIndex, Class modelCalss, List values) {
         HSSFWorkbook workbook = null;
-
         try {
             workbook = new HSSFWorkbook(input);
             HSSFSheet sheet = workbook.getSheetAt(sheetIndex);

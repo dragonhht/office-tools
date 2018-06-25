@@ -1,7 +1,6 @@
 package hht.dragon.office.base;
 
 import hht.dragon.office.excel.ImportExcel;
-import hht.dragon.office.test.model.ExlelModel;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.junit.Test;
 
@@ -39,9 +38,11 @@ public class TestExcel {
 
     @Test
     public void test1(){
-        Object v = new Date();
-        ReadExcelConfigUtil util = ReadExcelConfigUtil.getInstance();
-        System.out.println(util.convertValue(v, String.class));
+        Object v = 6;
+//        ReadExcelConfigUtil util = ReadExcelConfigUtil.getInstance();
+//        System.out.println(util.convertValue(v, String.class));
+        String str = "6.9";
+        System.out.println(str.substring(0,str.indexOf('.')));
 
     }
 }

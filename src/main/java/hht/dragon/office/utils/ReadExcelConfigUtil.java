@@ -103,7 +103,12 @@ public class ReadExcelConfigUtil {
             if (o == null) {
                 return 0;
             }
-            return Integer.parseInt(String.valueOf(o));
+            String str = String.valueOf(o);
+            int index = str.indexOf('.');
+            if (index > -1) {
+                str = str.substring(0, index);
+            }
+            return Integer.parseInt(str);
         }
         if ((cla == Double.class || cla == double.class)) {
             if (o == null) {

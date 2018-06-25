@@ -1,4 +1,4 @@
-package hht.dragon.office.test.model;
+package hht.dragon.office.base;
 
 import hht.dragon.office.annotation.Excel;
 import hht.dragon.office.annotation.ExcelColumn;
@@ -16,7 +16,7 @@ import java.util.Date;
 public class ExlelModel {
 
     @ExcelColumn(name = "名称")
-    private double title;
+    private int title;
     @ExcelColumn(name = "测试")
     private double test;
     @ExcelColumn(name = "qq")
@@ -26,11 +26,11 @@ public class ExlelModel {
 
     private String name;
 
-    public double getTitle() {
+    public int getTitle() {
         return title;
     }
 
-    public void setTitle(double title) {
+    public void setTitle(int title) {
         this.title = title;
     }
 
