@@ -26,6 +26,46 @@ public class ExlelModel {
 
     private String name;
 
+    public double getTitle() {
+        return title;
+    }
+
+    public void setTitle(double title) {
+        this.title = title;
+    }
+
+    public double getTest() {
+        return test;
+    }
+
+    public void setTest(double test) {
+        this.test = test;
+    }
+
+    public double getQq() {
+        return qq;
+    }
+
+    public void setQq(double qq) {
+        this.qq = qq;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "ExlelModel{" +

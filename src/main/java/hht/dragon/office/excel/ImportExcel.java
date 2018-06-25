@@ -2,12 +2,9 @@ package hht.dragon.office.excel;
 
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.CellType;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +47,10 @@ public class ImportExcel {
      * @return
      */
     private Object getValue(HSSFCell cell) {
+        if (cell == null) {
+            return null;
+        }
+        // TODO 考虑下还有那些类型的值
         switch (cell.getCellTypeEnum()) {
             case STRING:
                 return cell.getStringCellValue();
@@ -94,6 +95,7 @@ public class ImportExcel {
      */
     public void importValue(InputStream input, int sheetIndex, Class modelCalss, List values) {
         HSSFWorkbook workbook = null;
+
         try {
             workbook = new HSSFWorkbook(input);
             HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
@@ -102,7 +104,7 @@ public class ImportExcel {
             int len = sheet.getLastRowNum();
             for (int i = 0; i < len; i++) {
                 HSSFRow row = sheet.getRow(i);
-                if (i == 0) {
+                if (i == 0) { // TODO 若第一行不是标题行怎么办
                     setColTitle(row);
                     fields = util.readField(modelCalss, colTitle);
                     continue;
@@ -122,6 +124,31 @@ public class ImportExcel {
             }
         }
 
+    }
+
+    /**
+     * 读取excel文件的内容.
+     * @param file excel文件
+     * @param sheetIndex sheet页码
+     * @param modelCalss 接受每行内容的实体类
+     * @param values 接收数据的列表
+     */
+    public void importValue(File file, int sheetIndex, Class modelCalss, List values) {
+        InputStream input = null;
+        try {
+            input = new FileInputStream(file);
+            importValue(input, sheetIndex, modelCalss, values);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

@@ -3,14 +3,14 @@ package hht.dragon.office.base;
 import hht.dragon.office.excel.ImportExcel;
 import hht.dragon.office.test.model.ExlelModel;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Test;
 
-import java.io.*;
-import java.lang.reflect.Field;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,13 +26,22 @@ public class TestExcel {
         InputStream input = new FileInputStream(file);
 
         ImportExcel excel = new ImportExcel();
-        List values = new ArrayList();
+        List<ExlelModel> values = new ArrayList();
         excel.importValue(input, 0, ExlelModel.class, values);
 
         input.close();
 
-        for (Object obj : values) {
+        for (ExlelModel obj : values) {
             System.out.println(obj);
+            System.out.println(obj.getDate());
         }
+    }
+
+    @Test
+    public void test1(){
+        Object v = new Date();
+        ReadExcelConfigUtil util = ReadExcelConfigUtil.getInstance();
+        System.out.println(util.convertValue(v, String.class));
+
     }
 }
