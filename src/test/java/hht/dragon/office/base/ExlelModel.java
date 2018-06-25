@@ -20,7 +20,7 @@ public class ExlelModel {
     @ExcelColumn(name = "测试")
     private double test;
     @ExcelColumn(name = "qq")
-    private double qq;
+    private String qq;
     @ExcelColumn(name = "日期")
     private Date date;
 
@@ -42,11 +42,11 @@ public class ExlelModel {
         this.test = test;
     }
 
-    public double getQq() {
+    public String getQq() {
         return qq;
     }
 
-    public void setQq(double qq) {
+    public void setQq(String qq) {
         this.qq = qq;
     }
 
