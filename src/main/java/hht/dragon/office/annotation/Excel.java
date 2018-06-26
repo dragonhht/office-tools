@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Excel {
     /** 导出Excel文件是的文件名. */
-    String name() default "";
+    String name() default "excel-file";
 
 }

@@ -1,6 +1,10 @@
 package hht.dragon.office.base;
 
+import hht.dragon.office.annotation.Excel;
+import hht.dragon.office.annotation.ExcelColumn;
+import hht.dragon.office.excel.ExportExcel;
 import hht.dragon.office.excel.ImportExcel;
+import hht.dragon.office.utils.ExportExcelUtil;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.junit.Test;
 
@@ -8,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +25,8 @@ import java.util.List;
 public class TestExcel {
 
     @Test
-    public void testimport() throws IOException {
+    public void testimport() throws IOException, IllegalAccessException {
+        long start = System.currentTimeMillis();
         File file = new File("test.xls");
         InputStream input = new FileInputStream(file);
 
@@ -30,10 +36,11 @@ public class TestExcel {
 
         input.close();
 
-        for (ExlelModel obj : values) {
-            System.out.println(obj);
-            System.out.println(obj.getDate());
-        }
+        long end = System.currentTimeMillis();
+        System.out.println("运行时间：" + (end - start));
+
+        ExportExcel export = new ExportExcel();
+        export.exportValues(values, ".");
     }
 
     @Test
@@ -45,4 +52,11 @@ public class TestExcel {
         System.out.println(str.substring(0,str.indexOf('.')));
 
     }
+
+    @Test
+    public void test2() {
+        Object o = new ExlelModel();
+        ExportExcelUtil util = ExportExcelUtil.getInstance();
+    }
+
 }
