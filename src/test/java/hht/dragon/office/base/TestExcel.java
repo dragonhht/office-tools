@@ -40,7 +40,7 @@ public class TestExcel {
         System.out.println("运行时间：" + (end - start));
 
         ExportExcel export = new ExportExcel();
-        export.exportValues(values, ".");
+        export.exportValues(values);
     }
 
     @Test

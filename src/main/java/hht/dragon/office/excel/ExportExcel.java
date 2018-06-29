@@ -8,7 +8,6 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,9 +34,8 @@ public class ExportExcel {
     /**
      * 导出excel.
      * @param values 装有需导出数据的实体的列表.
-     * @param filePath 导出后文件的位置
      */
-    public void exportValues(List values, String filePath) throws ExportException, IOException, IllegalAccessException {
+    public void exportValues(List values) throws ExportException, IOException, IllegalAccessException {
         if (values == null) {
             throw new ExportException("导出的实体类数据不能为空");
         }
@@ -55,17 +53,10 @@ public class ExportExcel {
                 writeTitle(row);
                 continue;
             }
-            for (int j = 0; j < fields.size(); j++) {
-                Field field = fields.get(j);
-                field.setAccessible(true);
-                Object value = field.get(values.get(i));
-                HSSFCell cell = row.createCell(j);
-                // TODO 需支持其他类型
-                String str = util.dateToStr("yyyy-MM-dd", value);
-                cell.setCellValue(str);
-            }
+            writeValue(row, fields, values.get(i));
         }
-        File file = new File(filePath + File.separator + fileName +".xls");
+
+        File file = new File(fileName +".xls");
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -78,7 +69,6 @@ public class ExportExcel {
         if (workbook != null) {
             workbook.close();
         }
-
     }
 
     /**
@@ -113,6 +103,24 @@ public class ExportExcel {
         for (int i = 0; i < titles.size(); i++) {
             HSSFCell cell = row.createCell(i);
             cell.setCellValue(titles.get(i));
+        }
+    }
+
+    /**
+     * 将实体属性的值写入excel中
+     * @param row
+     * @param fields
+     * @param value
+     */
+    private void writeValue(HSSFRow row, List<Field> fields, Object value) throws IllegalAccessException {
+        for (int j = 0; j < fields.size(); j++) {
+            Field field = fields.get(j);
+            field.setAccessible(true);
+            Object val = field.get(value);
+            HSSFCell cell = row.createCell(j);
+            // TODO 需支持其他类型
+            String str = util.dateToStr("yyyy-MM-dd", val);
+            cell.setCellValue(str);
         }
     }
 
