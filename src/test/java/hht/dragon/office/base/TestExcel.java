@@ -27,20 +27,22 @@ public class TestExcel {
     @Test
     public void testimport() throws IOException, IllegalAccessException {
         long start = System.currentTimeMillis();
-        File file = new File("test.xls");
+        File file = new File("test1.xls");
         InputStream input = new FileInputStream(file);
 
         ImportExcel excel = new ImportExcel();
         List<ExlelModel> values = new ArrayList();
         excel.importValue(input, 0, ExlelModel.class, values);
 
+        values.forEach(System.out::println);
+
         input.close();
 
-        long end = System.currentTimeMillis();
-        System.out.println("运行时间：" + (end - start));
-
-        ExportExcel export = new ExportExcel();
-        export.exportValues(values);
+//        long end = System.currentTimeMillis();
+//        System.out.println("运行时间：" + (end - start));
+//
+//        ExportExcel export = new ExportExcel();
+//        export.exportValues(values);
     }
 
     @Test

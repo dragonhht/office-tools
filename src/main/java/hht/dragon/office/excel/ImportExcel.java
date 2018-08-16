@@ -103,7 +103,8 @@ public class ImportExcel {
             int len = sheet.getLastRowNum();
             for (int i = 0; i < len; i++) {
                 HSSFRow row = sheet.getRow(i);
-                if (i == 0) { // TODO 若第一行不是标题行怎么办
+                if (i == 0) {
+                    // TODO 若第一行不是标题行怎么办
                     setColTitle(row);
                     fields = util.readField(modelCalss, colTitle);
                     continue;

@@ -3,6 +3,7 @@ package hht.dragon.office.utils;
 import hht.dragon.office.annotation.ExcelColumn;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -14,6 +15,8 @@ import java.util.Map;
  */
 public class ReadExcelConfigUtil {
     private static final ReadExcelConfigUtil util = new ReadExcelConfigUtil();
+
+    private static final String EXCEL_BIG_NUM_FLAG = "E";
 
     private ReadExcelConfigUtil() {}
 
@@ -91,6 +94,10 @@ public class ReadExcelConfigUtil {
         if (cla == String.class) {
             // 将数值转换为字符串
             if (o instanceof Number || o instanceof Boolean) {
+                String str = String.valueOf(o);
+                if (str.contains(EXCEL_BIG_NUM_FLAG)) {
+                    return String.valueOf(new DecimalFormat("#").format(o));
+                }
                 return String.valueOf(o);
             }
             // 将日期转换为字符串
@@ -98,6 +105,12 @@ public class ReadExcelConfigUtil {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 return sdf.format(o);
             }
+            if (o instanceof String) {
+                return o;
+            }
+        }
+        if (cla == Date.class) {
+
         }
         if ( (cla == Integer.class || cla == int.class)) {
             if (o == null) {
