@@ -1,20 +1,14 @@
 package hht.dragon.office.base;
 
-import hht.dragon.office.annotation.Excel;
-import hht.dragon.office.annotation.ExcelColumn;
-import hht.dragon.office.excel.ExportExcel;
 import hht.dragon.office.excel.ImportExcel;
 import hht.dragon.office.utils.ExportExcelUtil;
-import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,7 +21,7 @@ public class TestExcel {
     @Test
     public void testimport() throws IOException, IllegalAccessException {
         long start = System.currentTimeMillis();
-        File file = new File("test1.xls");
+        File file = new File("test.xls");
         InputStream input = new FileInputStream(file);
 
         ImportExcel excel = new ImportExcel();

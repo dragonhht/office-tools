@@ -1,17 +1,20 @@
 package hht.dragon.office.utils;
 
 import hht.dragon.office.annotation.ExcelColumn;
+import hht.dragon.office.annotation.ExcelDateType;
+import hht.dragon.office.enums.DateFormatType;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
 /**
  * 读取excel实体配置的工具类.
- * User: huang
  * Date: 2018/6/25
+ * @author huang
  */
 public class ReadExcelConfigUtil {
     private static final ReadExcelConfigUtil util = new ReadExcelConfigUtil();
@@ -53,9 +56,7 @@ public class ReadExcelConfigUtil {
                 }
             }
             return configField;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
@@ -73,12 +74,10 @@ public class ReadExcelConfigUtil {
             obj = modelCalss.newInstance();
             for (int i = 0; i < fields.length; i++) {
                 fields[i].setAccessible(true);
-                Object o = convertValue(values[i], fields[i].getType());
+                Object o = convertValue(values[i], fields[i]);
                 fields[i].set(obj, o);
             }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return obj;
@@ -87,59 +86,132 @@ public class ReadExcelConfigUtil {
     /**
      * 将数据转换为指定的类型.
      * @param o 数据
-     * @param cla 类型
+     * @param field 属性
      * @return 转换后的数据
      */
-    public Object convertValue(Object o, Class cla) {
+    private Object convertValue(Object o, Field field) {
+        Class cla = field.getType();
         if (cla == String.class) {
-            // 将数值转换为字符串
-            if (o instanceof Number || o instanceof Boolean) {
-                String str = String.valueOf(o);
-                if (str.contains(EXCEL_BIG_NUM_FLAG)) {
-                    return String.valueOf(new DecimalFormat("#").format(o));
-                }
-                return String.valueOf(o);
-            }
-            // 将日期转换为字符串
-            if (o instanceof Date) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                return sdf.format(o);
-            }
-            if (o instanceof String) {
-                return o;
-            }
+            String dateFormat = getDateType(field);
+            return convertString(o, dateFormat);
         }
         if (cla == Date.class) {
-
+            String dateFormat = getDateType(field);
+            return convertDate(o, dateFormat);
         }
         if ( (cla == Integer.class || cla == int.class)) {
-            if (o == null) {
-                return 0;
-            }
-            String str = String.valueOf(o);
-            int index = str.indexOf('.');
-            if (index > -1) {
-                str = str.substring(0, index);
-            }
-            return Integer.parseInt(str);
+            return convertInt(o);
         }
         if ((cla == Double.class || cla == double.class)) {
-            if (o == null) {
-                return 0.0;
-            }
-            return Double.parseDouble(String.valueOf(o));
+            return convertDouble(o);
         }
         if ((cla == Float.class || cla == float.class)) {
-            if (o == null) {
-                return 0.0;
-            }
-            return Float.parseFloat(String.valueOf(o));
+            return convertFloat(o);
         }
         if (!(o instanceof Number) && !(o instanceof String)) {
             return cla.cast(o);
         } else {
             return null;
         }
+    }
+
+    /**
+     * 转换为字符串.
+     * @param o 数据
+     * @param dateFormat 日期类型
+     * @return 转换后的数据
+     */
+    private String convertString(Object o, String dateFormat) {
+
+        // 将数值转换为字符串
+        if (o instanceof Number || o instanceof Boolean) {
+            String str = String.valueOf(o);
+            if (str.contains(EXCEL_BIG_NUM_FLAG)) {
+                return String.valueOf(new DecimalFormat("#").format(o));
+            }
+            return String.valueOf(o);
+        }
+        // 将日期转换为字符串
+        if (o instanceof Date) {
+            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+            return sdf.format(o);
+        }
+        if (o instanceof String) {
+            return String.valueOf(o);
+        }
+        return null;
+    }
+
+    /**
+     * 转换为日期.
+     * @param o 数据
+     * @param dataFormat 日期格式
+     * @return 转换后的数据
+     */
+    private Date convertDate(Object o , String dataFormat) {
+        if (o instanceof String) {
+            SimpleDateFormat sdf = new SimpleDateFormat(dataFormat);
+            try {
+                return sdf.parse(String.valueOf(o));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 转换为整型.
+     * @param o 数据
+     * @return 转换后的数据
+     */
+    private Integer convertInt(Object o) {
+        if (o == null) {
+            return 0;
+        }
+        String str = String.valueOf(o);
+        int index = str.indexOf('.');
+        if (index > -1) {
+            str = str.substring(0, index);
+        }
+        return Integer.parseInt(str);
+    }
+
+    /**
+     * 转换为双精度浮点型.
+     * @param o 数据
+     * @return 转换后的数据
+     */
+    private Double convertDouble(Object o) {
+        if (o == null) {
+            return 0.0;
+        }
+        return Double.parseDouble(String.valueOf(o));
+    }
+
+    /**
+     * 转换为单精度浮点型.
+     * @param o 数据
+     * @return 转换后的数据
+     */
+    private Float convertFloat(Object o) {
+        if (o == null) {
+            return 0.0f;
+        }
+        return Float.parseFloat(String.valueOf(o));
+    }
+
+    /**
+     * 获取属性的日期格式.
+     * @param field 属性
+     * @return 格式
+     */
+    private String getDateType(Field field) {
+        ExcelDateType type = field.getAnnotation(ExcelDateType.class);
+        if (type != null) {
+            return type.value().getValue();
+        }
+        return DateFormatType.DAY.getValue();
     }
 
 }
