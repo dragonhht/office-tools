@@ -1,5 +1,7 @@
 package hht.dragon.office.excel;
 
+import hht.dragon.office.annotation.Excel;
+import hht.dragon.office.exception.NotExcelModelException;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.apache.poi.hssf.usermodel.*;
 
@@ -8,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 导入Excel.
@@ -70,7 +73,7 @@ public class ImportExcel {
 
     /**
      * 读取一行excel数据.
-     * @param row
+     * @param row Excel中的行
      * @return
      */
     private Object[] getValues(HSSFRow row) {
@@ -81,6 +84,28 @@ public class ImportExcel {
             for (int i = 0; i < len; i++) {
                 HSSFCell cell = row.getCell(i);
                 objects[i] = getValue(cell);
+            }
+        }
+        return objects;
+    }
+
+    /**
+     * 读取一行Excel的数据(指定的列)
+     * @param row Excel中的行
+     * @param col 需读取的列
+     * @return
+     */
+    private Object[] getValues(HSSFRow row, Set<Integer> col) {
+        Object[] objects = null;
+        if (row != null) {
+            objects = new Object[col.size()];
+            int colIndex = 0;
+            System.out.println(col);
+            for (int index : col) {
+                System.out.println("col: " + index);
+                HSSFCell cell = row.getCell(index);
+                objects[colIndex] = getValue(cell);
+                colIndex++;
             }
         }
         return objects;
@@ -98,20 +123,13 @@ public class ImportExcel {
         try {
             workbook = new HSSFWorkbook(input);
             HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
-            Field[] fields = null;
-
-            int len = sheet.getLastRowNum();
-            for (int i = 0; i < len; i++) {
-                HSSFRow row = sheet.getRow(i);
-                if (i == 0) {
-                    // TODO 若第一行不是标题行怎么办
-                    setColTitle(row);
-                    fields = util.readField(modelCalss, colTitle);
-                    continue;
-                }
-                Object[] vals = getValues(row);
-                values.add(util.newModel(fields, modelCalss, vals));
+            if (isReadByColIndex(modelCalss)) {
+                importValueByCol(sheet, modelCalss, values);
+            } else {
+                // 通过标题行
+                importValueByTitle(sheet, modelCalss, colTitle, values);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -124,6 +142,55 @@ public class ImportExcel {
             }
         }
 
+    }
+
+    /**
+     * 是否通过指定列号读取数据.
+     * @param cla 实体类
+     * @return
+     */
+    private boolean isReadByColIndex(Class cla) {
+        Excel excel = (Excel) cla.getAnnotation(Excel.class);
+        if (excel == null) {
+            throw new NotExcelModelException();
+        }
+        return excel.colIndex();
+    }
+
+    /**
+     * 导入Excel的数据，通过标题行.
+     * @param sheet excel中的sheet.
+     * @param modelClass 装载数据的实体
+     * @param colTitle 标题行
+     */
+    private void importValueByTitle(HSSFSheet sheet, Class modelClass, Map<Integer, String> colTitle,
+                                    List values) {
+        Field[] fields = null;
+        int len = sheet.getLastRowNum();
+        for (int i = 0; i < len; i++) {
+            HSSFRow row = sheet.getRow(i);
+            if (i == 0) {
+                // TODO 若第一行不是标题行怎么办
+                setColTitle(row);
+                fields = util.readField(modelClass, colTitle);
+                continue;
+            }
+            Object[] vals = getValues(row);
+            values.add(util.newModel(fields, modelClass, vals));
+        }
+    }
+
+    private void importValueByCol(HSSFSheet sheet, Class modelClass, List values) {
+        Map<Integer, Field> map = util.readField(modelClass);
+        Set<Integer> cols = map.keySet();
+        Field[] fields = new Field[cols.size()];
+        fields = map.values().toArray(fields);
+        int len = sheet.getLastRowNum();
+        for (int i = 0; i < len; i++) {
+            HSSFRow row = sheet.getRow(i);
+            Object[] vals = getValues(row, cols);
+            values.add(util.newModel(fields, modelClass, vals));
+        }
     }
 
     /**

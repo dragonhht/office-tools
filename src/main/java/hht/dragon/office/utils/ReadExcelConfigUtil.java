@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -28,7 +29,7 @@ public class ReadExcelConfigUtil {
     }
 
     /**
-     * 获取与excel文件对应的属性
+     * 获取与excel文件对应的属性(通过标题行)
      * @param cla 配置的实体类
      * @param colTitle 读取excel文件后获取的与标题对应的map
      * @return
@@ -60,6 +61,27 @@ public class ReadExcelConfigUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获取与excel文件对应的属性(通过注解制定的行)
+     * @param cla 配置的实体类
+     * @return
+     */
+    public Map<Integer, Field> readField(Class cla) {
+        // 获取实体类的所有属性
+        Field[] fields = cla.getDeclaredFields();
+        Map<Integer, Field> map = new HashMap<>(5);
+        for (Field field : fields) {
+            ExcelColumn anno = field.getAnnotation(ExcelColumn.class);
+            if (anno == null) {
+                continue;
+            }
+            if (anno.index() != -1) {
+                map.put(anno.index(), field);
+            }
+        }
+        return map;
     }
 
     /**
@@ -156,6 +178,9 @@ public class ReadExcelConfigUtil {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+        }
+        if (o instanceof Date) {
+            return (Date) o;
         }
         return null;
     }

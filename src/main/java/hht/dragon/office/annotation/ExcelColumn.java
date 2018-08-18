@@ -16,5 +16,7 @@ public @interface ExcelColumn {
 
     /** 列标题. */
     String name() default "";
+    /** 属性所在的列号，第一列为0，第二列为1，依次类推. */
+    int index() default -1;
 
 }

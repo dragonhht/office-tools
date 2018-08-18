@@ -12,7 +12,7 @@ import java.util.Date;
  * User: huang
  * Date: 2018/6/22
  */
-@Excel(name = "test1")
+@Excel(name = "test1", colIndex = true)
 @Data
 public class ExlelModel {
 
@@ -28,54 +28,4 @@ public class ExlelModel {
 
     private String name;
 
-    public int getTitle() {
-        return title;
-    }
-
-    public void setTitle(int title) {
-        this.title = title;
-    }
-
-    public double getTest() {
-        return test;
-    }
-
-    public void setTest(double test) {
-        this.test = test;
-    }
-
-    public String getQq() {
-        return qq;
-    }
-
-    public void setQq(String qq) {
-        this.qq = qq;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "ExlelModel{" +
-                "title=" + title +
-                ", test=" + test +
-                ", qq=" + qq +
-                ", date=" + date +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

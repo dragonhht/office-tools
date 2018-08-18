@@ -15,5 +15,7 @@ import java.lang.annotation.Target;
 public @interface Excel {
     /** 导出Excel文件是的文件名. */
     String name() default "excel-file";
+    /** 是否指定列号， 为false时则通过标题行. */
+    boolean colIndex() default false;
 
 }
