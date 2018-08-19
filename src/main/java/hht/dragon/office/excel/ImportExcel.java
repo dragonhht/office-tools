@@ -100,9 +100,7 @@ public class ImportExcel {
         if (row != null) {
             objects = new Object[col.size()];
             int colIndex = 0;
-            System.out.println(col);
             for (int index : col) {
-                System.out.println("col: " + index);
                 HSSFCell cell = row.getCell(index);
                 objects[colIndex] = getValue(cell);
                 colIndex++;

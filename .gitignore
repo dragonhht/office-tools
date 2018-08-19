@@ -4,4 +4,4 @@ gradle/
 out/
 target/
 build/
-test.xls
+*.xls
