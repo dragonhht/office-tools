@@ -10,7 +10,7 @@
 
 - Excel中的第一行为标题行,如：
 
-！[Excel有数据](https://github.com/dragonhht/GitImgs/blob/master/office-tools/excel-1.png?raw=true)
+![Excel有数据](https://github.com/dragonhht/GitImgs/blob/master/office-tools/excel-1.png?raw=true)
 
 - 实体类
 
@@ -56,7 +56,7 @@ input.close();
 
 -   Excel中的数据格式如下
 
-！[Excel有数据](https://github.com/dragonhht/GitImgs/blob/master/office-tools/excel-2.png?raw=true)
+![Excel有数据](https://github.com/dragonhht/GitImgs/blob/master/office-tools/excel-2.png?raw=true)
 
 -   实体类
 
