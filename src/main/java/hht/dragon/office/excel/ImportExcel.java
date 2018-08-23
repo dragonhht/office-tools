@@ -184,7 +184,7 @@ public class ImportExcel {
         Field[] fields = new Field[cols.size()];
         fields = map.values().toArray(fields);
         int len = sheet.getLastRowNum();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i <= len; i++) {
             HSSFRow row = sheet.getRow(i);
             Object[] vals = getValues(row, cols);
             values.add(util.newModel(fields, modelClass, vals));

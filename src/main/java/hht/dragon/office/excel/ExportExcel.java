@@ -3,6 +3,7 @@ package hht.dragon.office.excel;
 import hht.dragon.office.annotation.Excel;
 import hht.dragon.office.annotation.ExcelColumn;
 import hht.dragon.office.exception.ExportException;
+import hht.dragon.office.exception.NotExcelModelException;
 import hht.dragon.office.utils.ExportExcelUtil;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -50,8 +51,10 @@ public class ExportExcel {
         for (int i = 0; i < values.size(); i++) {
             HSSFRow row = sheet.createRow(i);
             if (i == 0) {
-                writeTitle(row);
-                continue;
+                if (!isReadByColIndex(val.getClass())) {
+                    writeTitle(row);
+                    continue;
+                }
             }
             writeValue(row, fields, values.get(i));
         }
@@ -69,6 +72,19 @@ public class ExportExcel {
         if (workbook != null) {
             workbook.close();
         }
+    }
+
+    /**
+     * 是否通过指定列号读取数据.
+     * @param cla 实体类
+     * @return
+     */
+    private boolean isReadByColIndex(Class cla) {
+        Excel excel = (Excel) cla.getAnnotation(Excel.class);
+        if (excel == null) {
+            throw new NotExcelModelException();
+        }
+        return excel.colIndex();
     }
 
     /**
