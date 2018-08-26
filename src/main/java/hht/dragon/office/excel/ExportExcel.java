@@ -134,9 +134,7 @@ public class ExportExcel {
             field.setAccessible(true);
             Object val = field.get(value);
             HSSFCell cell = row.createCell(j);
-            // TODO 需支持其他类型
-            String str = util.dateToStr("yyyy-MM-dd", val);
-            cell.setCellValue(str);
+            util.writeValue(val, field, cell);
         }
     }
 

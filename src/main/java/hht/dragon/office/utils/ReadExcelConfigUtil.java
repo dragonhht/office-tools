@@ -20,8 +20,6 @@ import java.util.Map;
 public class ReadExcelConfigUtil {
     private static final ReadExcelConfigUtil util = new ReadExcelConfigUtil();
 
-    private static final String EXCEL_BIG_NUM_FLAG = "E";
-
     private ReadExcelConfigUtil() {}
 
     public static ReadExcelConfigUtil getInstance() {
@@ -112,118 +110,30 @@ public class ReadExcelConfigUtil {
      * @return 转换后的数据
      */
     private Object convertValue(Object o, Field field) {
+        ConvertUtil convertUtil = ConvertUtil.getInstance();
         Class cla = field.getType();
         if (cla == String.class) {
             String dateFormat = getDateType(field);
-            return convertString(o, dateFormat);
+            return convertUtil.convertString(o, dateFormat);
         }
         if (cla == Date.class) {
             String dateFormat = getDateType(field);
-            return convertDate(o, dateFormat);
+            return convertUtil.convertDate(o, dateFormat);
         }
         if ( (cla == Integer.class || cla == int.class)) {
-            return convertInt(o);
+            return convertUtil.convertInt(o);
         }
         if ((cla == Double.class || cla == double.class)) {
-            return convertDouble(o);
+            return convertUtil.convertDouble(o);
         }
         if ((cla == Float.class || cla == float.class)) {
-            return convertFloat(o);
+            return convertUtil.convertFloat(o);
         }
         if (!(o instanceof Number) && !(o instanceof String)) {
             return cla.cast(o);
         } else {
             return null;
         }
-    }
-
-    /**
-     * 转换为字符串.
-     * @param o 数据
-     * @param dateFormat 日期类型
-     * @return 转换后的数据
-     */
-    private String convertString(Object o, String dateFormat) {
-
-        // 将数值转换为字符串
-        if (o instanceof Number || o instanceof Boolean) {
-            String str = String.valueOf(o);
-            if (str.contains(EXCEL_BIG_NUM_FLAG)) {
-                return String.valueOf(new DecimalFormat("#").format(o));
-            }
-            return String.valueOf(o);
-        }
-        // 将日期转换为字符串
-        if (o instanceof Date) {
-            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-            return sdf.format(o);
-        }
-        if (o instanceof String) {
-            return String.valueOf(o);
-        }
-        return null;
-    }
-
-    /**
-     * 转换为日期.
-     * @param o 数据
-     * @param dataFormat 日期格式
-     * @return 转换后的数据
-     */
-    private Date convertDate(Object o , String dataFormat) {
-        if (o instanceof String) {
-            SimpleDateFormat sdf = new SimpleDateFormat(dataFormat);
-            try {
-                return sdf.parse(String.valueOf(o));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        if (o instanceof Date) {
-            return (Date) o;
-        }
-        return null;
-    }
-
-    /**
-     * 转换为整型.
-     * @param o 数据
-     * @return 转换后的数据
-     */
-    private Integer convertInt(Object o) {
-        if (o == null) {
-            return 0;
-        }
-        String str = String.valueOf(o);
-        int index = str.indexOf('.');
-        if (index > -1) {
-            str = str.substring(0, index);
-        }
-        return Integer.parseInt(str);
-    }
-
-    /**
-     * 转换为双精度浮点型.
-     * @param o 数据
-     * @return 转换后的数据
-     */
-    private Double convertDouble(Object o) {
-        if (o == null) {
-            return 0.0;
-        }
-        return Double.parseDouble(String.valueOf(o));
-    }
-
-    /**
-     * 转换为单精度浮点型.
-     * @param o 数据
-     * @return 转换后的数据
-     */
-    private Float convertFloat(Object o) {
-        if (o == null) {
-            return 0.0f;
-        }
-        return Float.parseFloat(String.valueOf(o));
     }
 
     /**
