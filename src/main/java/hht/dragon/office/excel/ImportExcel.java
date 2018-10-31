@@ -1,12 +1,15 @@
 package hht.dragon.office.excel;
 
 import hht.dragon.office.annotation.Excel;
+import hht.dragon.office.annotation.handler.ExcelModelAnnotationUtil;
 import hht.dragon.office.exception.NotExcelModelException;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +25,11 @@ public class ImportExcel {
     /** 用于保存列数与行标题的关系. */
     private final Map<Integer, String> colTitle = new HashMap<>();
     private ReadExcelConfigUtil util;
+    ExcelModelAnnotationUtil modelUtil;
 
     public ImportExcel() {
         util = ReadExcelConfigUtil.getInstance();
+        modelUtil = ExcelModelAnnotationUtil.getInstance();
     }
 
 
@@ -46,7 +51,7 @@ public class ImportExcel {
 
     /**
      * 读取单元格的值.
-     * @param cell
+     * @param cell 单元格
      * @return
      */
     private Object getValue(HSSFCell cell) {
@@ -121,14 +126,13 @@ public class ImportExcel {
         try {
             workbook = new HSSFWorkbook(input);
             HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
-            if (isReadByColIndex(modelCalss)) {
+            if (modelUtil.isReadByColIndex(modelCalss)) {
                 importValueByCol(sheet, modelCalss, values);
             } else {
                 // 通过标题行
                 importValueByTitle(sheet, modelCalss, colTitle, values);
             }
-
-        } catch (IOException e) {
+        } catch (IOException | IllegalAccessException | ParseException | InstantiationException e) {
             e.printStackTrace();
         } finally {
             if (workbook != null) {
@@ -139,30 +143,16 @@ public class ImportExcel {
                 }
             }
         }
-
-    }
-
-    /**
-     * 是否通过指定列号读取数据.
-     * @param cla 实体类
-     * @return
-     */
-    private boolean isReadByColIndex(Class cla) {
-        Excel excel = (Excel) cla.getAnnotation(Excel.class);
-        if (excel == null) {
-            throw new NotExcelModelException();
-        }
-        return excel.colIndex();
     }
 
     /**
      * 导入Excel的数据，通过标题行.
      * @param sheet excel中的sheet.
      * @param modelClass 装载数据的实体
-     * @param colTitle 标题行
+     * @param colTitle 放有标题行信息的map
      */
-    private void importValueByTitle(HSSFSheet sheet, Class modelClass, Map<Integer, String> colTitle,
-                                    List values) {
+    public void importValueByTitle(HSSFSheet sheet, Class modelClass, Map<Integer, String> colTitle,
+                                    List values) throws IllegalAccessException, ParseException, InstantiationException {
         Field[] fields = null;
         int len = sheet.getLastRowNum();
         for (int i = 0; i < len; i++) {
@@ -170,7 +160,7 @@ public class ImportExcel {
             if (i == 0) {
                 // TODO 若第一行不是标题行怎么办
                 setColTitle(row);
-                fields = util.readField(modelClass, colTitle);
+                fields = modelUtil.readField(modelClass, colTitle);
                 continue;
             }
             Object[] vals = getValues(row);
@@ -178,8 +168,14 @@ public class ImportExcel {
         }
     }
 
-    private void importValueByCol(HSSFSheet sheet, Class modelClass, List values) {
-        Map<Integer, Field> map = util.readField(modelClass);
+    /**
+     * 通过列号读取excel文件
+     * @param sheet HSSFSheet对象
+     * @param modelClass 接收结果的实体类
+     * @param values 存放结果的集合
+     */
+    public void importValueByCol(HSSFSheet sheet, Class modelClass, List values) throws IllegalAccessException, ParseException, InstantiationException {
+        Map<Integer, Field> map = modelUtil.readField(modelClass);
         Set<Integer> cols = map.keySet();
         Field[] fields = new Field[cols.size()];
         fields = map.values().toArray(fields);

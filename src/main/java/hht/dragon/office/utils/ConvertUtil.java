@@ -1,6 +1,7 @@
 package hht.dragon.office.utils;
 
-import java.lang.reflect.Field;
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,6 +12,7 @@ import java.util.Date;
  * User: huang
  * Date: 18-8-26
  */
+@Slf4j
 public class ConvertUtil {
 
     private static final ConvertUtil util = new ConvertUtil();
@@ -36,6 +38,7 @@ public class ConvertUtil {
         // 将数值转换为字符串
         if (o instanceof Number || o instanceof Boolean) {
             String str = String.valueOf(o);
+            // 数值较大时
             if (str.contains(EXCEL_BIG_NUM_FLAG)) {
                 return String.valueOf(new DecimalFormat("#").format(o));
             }
@@ -58,14 +61,10 @@ public class ConvertUtil {
      * @param dataFormat 日期格式
      * @return 转换后的数据
      */
-    public Date convertDate(Object o , String dataFormat) {
+    public Date convertDate(Object o , String dataFormat) throws ParseException {
         if (o instanceof String) {
             SimpleDateFormat sdf = new SimpleDateFormat(dataFormat);
-            try {
-                return sdf.parse(String.valueOf(o));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            return sdf.parse(String.valueOf(o));
         }
         if (o instanceof Date) {
             return (Date) o;

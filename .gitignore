@@ -5,3 +5,5 @@ out/
 target/
 build/
 *.xls
+*.iml
+*.xlsx
