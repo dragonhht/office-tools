@@ -62,15 +62,21 @@ public class ExportExcel {
         Sheet sheet = workbook.createSheet();
         Object val = values.get(0);
         List<Field> fields = getValueFields(val.getClass());
+        int rowIndex = 0;
+        boolean isreadTitle = true;
         for (int i = 0; i < values.size(); i++) {
-            Row row = sheet.createRow(i);
+            Row row = sheet.createRow(rowIndex);
             if (i == 0) {
-                if (!modelUtil.isReadByColIndex(val.getClass())) {
+                if (isreadTitle && !modelUtil.isReadByColIndex(val.getClass())) {
                     writeTitle(row);
+                    i--;
+                    rowIndex++;
+                    isreadTitle = false;
                     continue;
                 }
             }
             writeValue(row, fields, values.get(i));
+            rowIndex++;
         }
 
         String exportFileName;
