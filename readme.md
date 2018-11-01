@@ -1,5 +1,7 @@
 # Office工具
 
+[![codebeat badge](https://codebeat.co/badges/15df2cd7-587f-4018-b405-8bcc99b80c1f)](https://codebeat.co/projects/github-com-dragonhht-office-tools-master)
+
 > 目前支持对Excel进行简单的导出、导出操作
 
 # Excel(暂支持.xls格式的文件)
