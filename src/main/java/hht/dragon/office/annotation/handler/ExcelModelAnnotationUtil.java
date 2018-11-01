@@ -104,4 +104,18 @@ public class ExcelModelAnnotationUtil {
         // TODO 其他格式
         return DateFormatType.DAY.getValue();
     }
+
+    /**
+     * 读取属性注解的日期格式.
+     * @param field
+     * @return
+     */
+    public String getTimeType(Field field) {
+        ExcelDateType anno = field.getAnnotation(ExcelDateType.class);
+        if (anno == null) {
+            return DateFormatType.DAY.getValue();
+        }
+        DateFormatType type = anno.value();
+        return type.getValue();
+    }
 }

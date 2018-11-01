@@ -1,6 +1,7 @@
 package hht.dragon.office.utils;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
+import hht.dragon.office.annotation.handler.ExcelModelAnnotationUtil;
+import org.apache.poi.ss.usermodel.Cell;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -31,7 +32,7 @@ public class ExportExcelUtil {
      */
     public String dateToStr(Field field, Object value) {
         if (value instanceof Date) {
-            AnnotationUtil util = AnnotationUtil.getInstance();
+            ExcelModelAnnotationUtil util = ExcelModelAnnotationUtil.getInstance();
             String format = util.getTimeType(field);
             SimpleDateFormat sdf = new SimpleDateFormat(format);
             return sdf.format(value);
@@ -39,7 +40,13 @@ public class ExportExcelUtil {
         return String.valueOf(value);
     }
 
-    public void writeValue(Object obj, Field field, HSSFCell cell) {
+    /**
+     * 向单元格内写如数据.
+     * @param obj 需写入的数据
+     * @param field 写入数据的属性信息
+     * @param cell 单元格
+     */
+    public void writeValue(Object obj, Field field, Cell cell) {
         if (obj instanceof Date) {
             String time = dateToStr(field, obj);
             cell.setCellValue(time);

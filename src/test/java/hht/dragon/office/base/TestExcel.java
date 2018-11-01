@@ -20,17 +20,17 @@ import java.util.List;
 public class TestExcel {
 
     @Test
-    public void testImport() throws IOException {
-        File file = new File("test-11.xlsx");
+    public void testImport() throws IOException, IllegalAccessException {
+        File file = new File("test-11.xls");
         InputStream input = new FileInputStream(file);
-        ImportExcel excel = new ImportExcel(true);
+        ImportExcel excel = new ImportExcel(false);
         List<ExlelModel> values = new ArrayList<>();
-        excel.importValue(input, 1, ExlelModel.class, values);
+        excel.importValue(input, 0, ExlelModel.class, values);
         values.forEach(System.out::println);
         input.close();
 
-        /*ExportExcel export = new ExportExcel();
-        export.exportValues(values);*/
+        ExportExcel export = new ExportExcel(false);
+        export.exportValues(values);
     }
 
     @Test
