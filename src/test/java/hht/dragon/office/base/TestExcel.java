@@ -21,11 +21,11 @@ public class TestExcel {
 
     @Test
     public void testImport() throws IOException {
-        File file = new File("test-11.xls");
+        File file = new File("test-11.xlsx");
         InputStream input = new FileInputStream(file);
-        ImportExcel excel = new ImportExcel();
+        ImportExcel excel = new ImportExcel(true);
         List<ExlelModel> values = new ArrayList<>();
-        excel.importValue(input, 0, ExlelModel.class, values);
+        excel.importValue(input, 1, ExlelModel.class, values);
         values.forEach(System.out::println);
         input.close();
 

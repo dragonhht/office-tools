@@ -45,16 +45,16 @@ public class ExlelModel {
 ```
 File file = new File("test-1.xls");
 InputStream input = new FileInputStream(file);
-ImportExcel excel = new ImportExcel();
+ImportExcel excel = new ImportExcel(false);
 List<ExlelModel> values = new ArrayList();
 excel.importValue(input, 0, ExlelModel.class, values);
 values.forEach(System.out::println);
 input.close();
 ```
 
-> 导入时需创建`ImportExcel`实例，用于进行导出操作，Excel数据的导入只需使用`ImportExcel`类中的`importValue`方法即可，该方法的需要传入四个参数，第一个参数为`Excel文件的输入流`，第二个参数为`需读取的Excel文件的Sheet索引`,第三个参数`用于接收每行数据的实体类`，第四个参数`用于接收读取数据的容器`
+> 导入时需创建`ImportExcel`实例(构造器只有一个布尔类型的参数`isHeightVersion`,当传入`false`则表示该Excel文档为低版本文档，后缀为`.xls`；当传入为`true`时,则表示为高版本文档，后缀支持`.xlsx`)，用于进行导出操作，Excel数据的导入只需使用`ImportExcel`类中的`importValue`方法即可，该方法的需要传入四个参数，第一个参数为`Excel文件的输入流`，第二个参数为`需读取的Excel文件的Sheet索引`,第三个参数`用于接收每行数据的实体类`，第四个参数`用于接收读取数据的容器`
 
-### 2、通过需读取的数据的列索引(暂时有bug)
+### 2、通过需读取的数据的列索引
 
 -   Excel中的数据格式如下
 

@@ -3,6 +3,11 @@ package hht.dragon.office.excel;
 import hht.dragon.office.annotation.handler.ExcelModelAnnotationUtil;
 import hht.dragon.office.utils.ReadExcelConfigUtil;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -22,22 +27,24 @@ public class ImportExcel {
     /** 用于保存列数与行标题的关系. */
     private final Map<Integer, String> colTitle = new HashMap<>();
     private ReadExcelConfigUtil util;
-    ExcelModelAnnotationUtil modelUtil;
+    private ExcelModelAnnotationUtil modelUtil;
+    private boolean isHeightVersion;
 
-    public ImportExcel() {
+    public ImportExcel(boolean isHeightVersion) {
         util = ReadExcelConfigUtil.getInstance();
         modelUtil = ExcelModelAnnotationUtil.getInstance();
+        this.isHeightVersion = isHeightVersion;
     }
 
 
     /**
      * 保存列数与标题的关系.
      */
-    private void setColTitle(HSSFRow row) throws NullPointerException {
+    private void setColTitle(Row row) throws NullPointerException {
         if (row != null) {
             int num = row.getLastCellNum();
             for (int i = 0; i < num; i++) {
-                HSSFCell cell = row.getCell(i);
+                Cell cell = row.getCell(i);
                 // TODO 暂支持字符串
                 colTitle.put(i, cell.getStringCellValue());
             }
@@ -51,7 +58,7 @@ public class ImportExcel {
      * @param cell 单元格
      * @return
      */
-    private Object getValue(HSSFCell cell) {
+    private Object getValue(Cell cell) {
         if (cell == null) {
             return null;
         }
@@ -78,13 +85,13 @@ public class ImportExcel {
      * @param row Excel中的行
      * @return
      */
-    private Object[] getValues(HSSFRow row) {
+    private Object[] getValues(Row row) {
         Object[] objects = null;
         if (row != null) {
             int len = row.getLastCellNum();
             objects = new Object[len];
             for (int i = 0; i < len; i++) {
-                HSSFCell cell = row.getCell(i);
+                Cell cell = row.getCell(i);
                 objects[i] = getValue(cell);
             }
         }
@@ -97,13 +104,13 @@ public class ImportExcel {
      * @param col 需读取的列
      * @return
      */
-    private Object[] getValues(HSSFRow row, Set<Integer> col) {
+    private Object[] getValues(Row row, Set<Integer> col) {
         Object[] objects = null;
         if (row != null) {
             objects = new Object[col.size()];
             int colIndex = 0;
             for (int index : col) {
-                HSSFCell cell = row.getCell(index);
+                Cell cell = row.getCell(index);
                 objects[colIndex] = getValue(cell);
                 colIndex++;
             }
@@ -119,10 +126,14 @@ public class ImportExcel {
      * @param values 接收数据的列表
      */
     public void importValue(InputStream input, int sheetIndex, Class modelCalss, List values) {
-        HSSFWorkbook workbook = null;
+        Workbook workbook = null;
         try {
-            workbook = new HSSFWorkbook(input);
-            HSSFSheet sheet = workbook.getSheetAt(sheetIndex);
+            if (isHeightVersion) {
+                workbook = new XSSFWorkbook(input);
+            } else {
+                workbook = new HSSFWorkbook(input);
+            }
+            Sheet sheet = workbook.getSheetAt(sheetIndex);
             if (modelUtil.isReadByColIndex(modelCalss)) {
                 importValueByCol(sheet, modelCalss, values);
             } else {
@@ -148,12 +159,12 @@ public class ImportExcel {
      * @param modelClass 装载数据的实体
      * @param colTitle 放有标题行信息的map
      */
-    public void importValueByTitle(HSSFSheet sheet, Class modelClass, Map<Integer, String> colTitle,
+    public void importValueByTitle(Sheet sheet, Class modelClass, Map<Integer, String> colTitle,
                                     List values) throws IllegalAccessException, ParseException, InstantiationException {
         Field[] fields = null;
         int len = sheet.getLastRowNum();
         for (int i = 0; i < len; i++) {
-            HSSFRow row = sheet.getRow(i);
+            Row row = sheet.getRow(i);
             if (i == 0) {
                 // TODO 若第一行不是标题行怎么办
                 setColTitle(row);
@@ -171,14 +182,14 @@ public class ImportExcel {
      * @param modelClass 接收结果的实体类
      * @param values 存放结果的集合
      */
-    public void importValueByCol(HSSFSheet sheet, Class modelClass, List values) throws IllegalAccessException, ParseException, InstantiationException {
+    public void importValueByCol(Sheet sheet, Class modelClass, List values) throws IllegalAccessException, ParseException, InstantiationException {
         Map<Integer, Field> map = modelUtil.readField(modelClass);
         Set<Integer> cols = map.keySet();
         Field[] fields = new Field[cols.size()];
         fields = map.values().toArray(fields);
         int len = sheet.getLastRowNum();
         for (int i = 0; i <= len; i++) {
-            HSSFRow row = sheet.getRow(i);
+            Row row = sheet.getRow(i);
             Object[] vals = getValues(row, cols);
             values.add(util.newModel(fields, modelClass, vals));
         }
