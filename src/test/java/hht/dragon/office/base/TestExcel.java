@@ -21,7 +21,7 @@ public class TestExcel {
 
     @Test
     public void testImport() throws IOException, IllegalAccessException {
-        File file = new File("test-11.xls");
+        File file = new File("test-1.xls");
         InputStream input = new FileInputStream(file);
         ImportExcel excel = new ImportExcel(false);
         List<ExlelModel> values = new ArrayList<>();

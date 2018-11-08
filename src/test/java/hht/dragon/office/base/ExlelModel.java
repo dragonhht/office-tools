@@ -13,21 +13,21 @@ import java.util.Date;
  * User: huang
  * Date: 2018/6/22
  */
-@Excel(name = "student")
+@Excel(name = "student", colIndex = true)
 @Data
 public class ExlelModel {
 
-    @ExcelColumn(name = "学号")
+    @ExcelColumn(index = 0)
     private String studentId;
-    @ExcelColumn(name = "班级")
+    @ExcelColumn(index = 2)
     private String studentClass;
-    @ExcelColumn(name = "姓名")
+    @ExcelColumn(index = 1)
     private String studentName;
-    @ExcelColumn(name = "日期")
+    @ExcelColumn(index = 5)
     @ExcelDateType(DateFormatType.DAY)
     private Date date;
-    @ExcelColumn(name = "qq")
+    @ExcelColumn(index = 3)
     private String qq;
-    @ExcelColumn(name = "成绩")
+    @ExcelColumn(index = 4)
     private double score;
 }
